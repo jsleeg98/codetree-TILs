@@ -65,7 +65,6 @@ def move(li_p, ext, total_move):
 def print_p(li_p):
     for p in li_p:
         print(p.r, p.c)
-    print('-' * 20)
 
 def print_m(m):
     for r in range(1, N + 1):
@@ -86,46 +85,59 @@ def rotate(li_p, ext, m):
             li_p_min.append(p)
 
     li_rect = []
-    for d in range(dist, -1, -1):
-        rect_r = ext[0] - dist
-        rect_c = ext[1] - d
-        if 1 <= rect_r <= N and 1 <= rect_c <= N and 1 <= rect_r + dist <= N and 1 <= rect_c + dist <= N:
-            for p in li_p_min:
-                if rect_r <= p.r <= rect_r + dist and rect_c <= p.c <= rect_c + dist:
-                    li_rect.append((rect_r, rect_c))
-                    break
-    for d in range(dist-1, -1, -1):
-        rect_r = ext[0] - d
-        rect_c = ext[1]
-        if 1 <= rect_r <= N and 1 <= rect_c <= N and 1 <= rect_r + dist <= N and 1 <= rect_c + dist <= N:
-            for p in li_p_min:
-                if rect_r <= p.r <= rect_r + dist and rect_c <= p.c <= rect_c + dist:
-                    li_rect.append((rect_r, rect_c))
-                    break
-    for d in range(dist-1, -1, -1):
-        rect_r = ext[0]
-        rect_c = ext[1] - d - 1
-        if 1 <= rect_r <= N and 1 <= rect_c <= N and 1 <= rect_r + dist <= N and 1 <= rect_c + dist <= N:
-            for p in li_p_min:
-                if rect_r <= p.r <= rect_r + dist and rect_c <= p.c <= rect_c + dist:
-                    li_rect.append((rect_r, rect_c))
-                    break
-    for d in range(1, dist):
-        rect_r = ext[0] + d
-        rect_c = ext[1] - dist
-        if 1 <= rect_r <= N and 1 <= rect_c <= N and 1 <= rect_r + dist <= N and 1 <= rect_c + dist <= N:
-            for p in li_p_min:
-                if rect_r <= p.r <= rect_r + dist and rect_c <= p.c <= rect_c + dist:
-                    li_rect.append((rect_r, rect_c))
-                    break
+    cr = ext[0] - dist
+    cc = ext[1] - dist
+    for dr in range(0, dist + 1):
+        for dc in range(0, dist + 1):
+            rect_r = cr + dr
+            rect_c = cc + dc
+            # print(rect_r, rect_c)
+            if 1 <= rect_r <= N and 1 <= rect_c <= N and 1 <= rect_r + dist <= N and 1 <= rect_c + dist <= N:
+                for p in li_p_min:
+                    if rect_r <= p.r <= rect_r + dist and rect_c <= p.c <= rect_c + dist:
+                        li_rect.append((rect_r, rect_c))
+                        break
+
+    # for d in range(dist, -1, -1):
+    #     rect_r = ext[0] - dist
+    #     rect_c = ext[1] - d
+    #     if 1 <= rect_r <= N and 1 <= rect_c <= N and 1 <= rect_r + dist <= N and 1 <= rect_c + dist <= N:
+    #         for p in li_p_min:
+    #             if rect_r <= p.r <= rect_r + dist and rect_c <= p.c <= rect_c + dist:
+    #                 li_rect.append((rect_r, rect_c))
+    #                 break
+    # for d in range(dist-1, -1, -1):
+    #     rect_r = ext[0] - d
+    #     rect_c = ext[1]
+    #     if 1 <= rect_r <= N and 1 <= rect_c <= N and 1 <= rect_r + dist <= N and 1 <= rect_c + dist <= N:
+    #         for p in li_p_min:
+    #             if rect_r <= p.r <= rect_r + dist and rect_c <= p.c <= rect_c + dist:
+    #                 li_rect.append((rect_r, rect_c))
+    #                 break
+    # for d in range(1, dist + 1):
+    #     rect_r = ext[0]
+    #     rect_c = ext[1] - d
+    #     if 1 <= rect_r <= N and 1 <= rect_c <= N and 1 <= rect_r + dist <= N and 1 <= rect_c + dist <= N:
+    #         for p in li_p_min:
+    #             if rect_r <= p.r <= rect_r + dist and rect_c <= p.c <= rect_c + dist:
+    #                 li_rect.append((rect_r, rect_c))
+    #                 break
+    # for d in range(1, dist):
+    #     rect_r = ext[0] - d
+    #     rect_c = ext[1] - dist
+    #     if 1 <= rect_r <= N and 1 <= rect_c <= N and 1 <= rect_r + dist <= N and 1 <= rect_c + dist <= N:
+    #         for p in li_p_min:
+    #             if rect_r <= p.r <= rect_r + dist and rect_c <= p.c <= rect_c + dist:
+    #                 li_rect.append((rect_r, rect_c))
+    #                 break
 
     # 돌릴 정사각형 왼쪽 위 좌표 찾기
     heapq.heapify(li_rect)  # r, c 우선순위로 정렬
 
     # 현재 사람 위치 맵 그리기
-    m_p = [[0 for _ in range(N + 1)] for _ in range(N + 1)]
+    m_p = [[[] for _ in range(N + 1)] for _ in range(N + 1)]
     for p in li_p:
-        m_p[p.r][p.c] = p
+        m_p[p.r][p.c].append(p)
     # print(li_rect)
     tr = li_rect[0][0]
     tc = li_rect[0][1]
@@ -139,17 +151,24 @@ def rotate(li_p, ext, m):
             cc = tc + dc
             nr = cr + (dc - dr)
             nc = cc + (dist - dr - dc)
-            if m_p[cr][cc] != 0:
-                m_p[cr][cc].r = nr
-                m_p[cr][cc].c = nc
-            elif cr == ext[0] and cc == ext[1]:
-                ext[0] = nr
-                ext[1] = nc
-            elif m[cr][cc] != 0:
+            # print('-' * 20)
+            # print(cr, cc)
+            # print(nr, nc)
+            # print('-' * 20)
+            if len(m_p[cr][cc]) > 0:  # 사람 위치 인 경우
+                for p in m_p[cr][cc]:
+                    p.r = nr
+                    p.c = nc
+                    # print('person')
+            elif cr == ext[0] and cc == ext[1]:  # 출구 위치인 경우
+                next_ext_r = nr
+                next_ext_c = nc
+            elif m[cr][cc] != 0:  # 벽이 있는 경우
                 new_m[nr][nc] = m[cr][cc] - 1
             else:
                 new_m[nr][nc] = m[cr][cc]
-
+    ext[0] = next_ext_r
+    ext[1] = next_ext_c
     for dr in range(0, dist + 1):
         for dc in range(0, dist + 1):
             cr = tr + dr
@@ -162,9 +181,13 @@ dir = ((1, 0), (-1, 0), (0, 1), (0, -1))
 total_move = 0
 for i in range(K):
     # print(f'{i + 1}초')
+    # print_m(m)
+    # print_p(li_p)
+    # print('-' * 20)
     if len(li_p) == 0:  # 모두 탈출한 경우 끝
         break
     li_p, total_move = move(li_p, ext, total_move)  # 움직임
+    # print('move')
     # print_p(li_p)
     if len(li_p) == 0:
         break
