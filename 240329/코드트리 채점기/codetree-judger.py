@@ -52,7 +52,8 @@ def try_check(t):
                         num_j = empty_j[0]
                         work_j[num_j] = (tmp_p, t, tmp_u)  # 채점기에 추가
                         if len(wq_tmp) > 0:
-                            wq.append(*wq_tmp)  # 불가능했던 것들 다시 wq에 추가
+                            for tmp in wq_tmp:
+                                wq.append(tmp)  # 불가능했던 것들 다시 wq에 추가
                         break
                     else:
                         wq_tmp.append((tmp_p, tmp_t, tmp_u))  # 불가능 리스트 추가
@@ -62,12 +63,14 @@ def try_check(t):
                     num_j = empty_j[0]
                     work_j[num_j] = (tmp_p, t, tmp_u)  # 채점기에 추가
                     if len(wq_tmp) > 0:
-                        wq.append(*wq_tmp)  # 불가능했던 것들 다시 wq에 추가
+                        for tmp in wq_tmp:
+                            wq.append(tmp)  # 불가능했던 것들 다시 wq에 추가
                     break
             else:  # 현재 도메인이 채점 중인 경우
                 wq_tmp.append((tmp_p, tmp_t, tmp_u))  # 불가능 리스트 추가
         if len(wq_tmp) > 0:
-            wq.append(*wq_tmp)  # 불가능했던 것들 다시 wq에 추가
+            for tmp in wq_tmp:
+                wq.append(tmp)  # 불가능했던 것들 다시 wq에 추가
 
 # 채점 종료
 def end_check(t, j_id):
