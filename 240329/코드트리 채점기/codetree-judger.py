@@ -27,14 +27,14 @@ def ask_check(t, p, u):
     flag = wq_d.get(u, False)
     if not flag:
         wq_d[u] = True
-        wq.append((p, t, u))
+        heapq.heappush(wq, (p, t, u))
 
 # 채점 시도
 def try_check(t):
     global wq, work_d
     if len(empty_j) > 0:  # 쉬고 있는 채점기가 있는 경우
         # wq에서 우선순위대로 뽑기
-        heapq.heapify(wq)
+        # heapq.heapify(wq)
         wq_tmp = []
         while wq:
             tmp_p, tmp_t, tmp_u = heapq.heappop(wq)
@@ -48,29 +48,34 @@ def try_check(t):
                     if t >= s + 3 * (e-s):  # 채점 가능
                         wq_d[tmp_u] = False  # 채점 큐 도메인 False 변환
                         work_d[domain] = True  # 채점 중 도메인 True 변경
-                        heapq.heapify(empty_j)  # 비어있는 채점기 중 가장 작은 번호 얻기
+                        # heapq.heapify(empty_j)  # 비어있는 채점기 중 가장 작은 번호 얻기
+                        # num_j = empty_j[0]
                         num_j = empty_j[0]
                         work_j[num_j] = (tmp_p, t, tmp_u)  # 채점기에 추가
                         if len(wq_tmp) > 0:
                             for tmp in wq_tmp:
-                                wq.append(tmp)  # 불가능했던 것들 다시 wq에 추가
+                                heapq.heappush(wq, tmp)
+                                # wq.append(tmp)  # 불가능했던 것들 다시 wq에 추가
                         break
                     else:
                         wq_tmp.append((tmp_p, tmp_t, tmp_u))  # 불가능 리스트 추가
                 else:  # 한번도 채점 안된 도메인인 경우 - 채점 시작
                     work_d[domain] = True  # 채점 중 도메인 True 변경
-                    heapq.heapify(empty_j)  # 비어있는 채점기 중 가장 작은 번호 얻기
+                    # heapq.heapify(empty_j)  # 비어있는 채점기 중 가장 작은 번호 얻기
+                    # num_j = empty_j[0]
                     num_j = empty_j[0]
                     work_j[num_j] = (tmp_p, t, tmp_u)  # 채점기에 추가
                     if len(wq_tmp) > 0:
                         for tmp in wq_tmp:
-                            wq.append(tmp)  # 불가능했던 것들 다시 wq에 추가
+                            heapq.heappush(wq, tmp)
+                            # wq.append(tmp)  # 불가능했던 것들 다시 wq에 추가
                     break
             else:  # 현재 도메인이 채점 중인 경우
                 wq_tmp.append((tmp_p, tmp_t, tmp_u))  # 불가능 리스트 추가
         if len(wq_tmp) > 0:
             for tmp in wq_tmp:
-                wq.append(tmp)  # 불가능했던 것들 다시 wq에 추가
+                heapq.heappush(wq, tmp)
+                # wq.append(tmp)  # 불가능했던 것들 다시 wq에 추가
 
 # 채점 종료
 def end_check(t, j_id):
@@ -85,7 +90,8 @@ def end_check(t, j_id):
         else:
             hist_d[domain].append((tmp_t, t, id, j_id))  # 채점 끝난 기록
         work_d[domain] = False  # 채점 중이 아님 표시
-        empty_j.append(j_id)  # 비어있는 채점기에 추가
+        heapq.heappush(empty_j, j_id)
+        # empty_j.append(j_id)  # 비어있는 채점기에 추가
 
 # 채점 대기 큐 조회
 def check_wq(t):
