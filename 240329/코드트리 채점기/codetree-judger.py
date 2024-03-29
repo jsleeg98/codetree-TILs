@@ -34,7 +34,7 @@ def try_check(t):
     global wq, work_d
     if len(empty_j) > 0:  # 쉬고 있는 채점기가 있는 경우
         # wq에서 우선순위대로 뽑기
-        # heapq.heapify(wq)
+        heapq.heapify(wq)
         wq_tmp = []
         while wq:
             tmp_p, tmp_t, tmp_u = heapq.heappop(wq)
@@ -74,8 +74,8 @@ def try_check(t):
                 wq_tmp.append((tmp_p, tmp_t, tmp_u))  # 불가능 리스트 추가
         if len(wq_tmp) > 0:
             for tmp in wq_tmp:
-                heapq.heappush(wq, tmp)
-                # wq.append(tmp)  # 불가능했던 것들 다시 wq에 추가
+                # heapq.heappush(wq, tmp)
+                wq.append(tmp)  # 불가능했던 것들 다시 wq에 추가
 
 # 채점 종료
 def end_check(t, j_id):
