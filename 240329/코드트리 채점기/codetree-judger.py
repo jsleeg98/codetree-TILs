@@ -27,7 +27,8 @@ def ask_check(t, p, u):
     flag = wq_d.get(u, False)
     if not flag:
         wq_d[u] = True
-        heapq.heappush(wq, (p, t, u))
+        # heapq.heappush(wq, (p, t, u))
+        wq.append((p, t, u))
 
 # 채점 시도
 def try_check(t):
