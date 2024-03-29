@@ -77,7 +77,8 @@ def try_check(t):
         #     for tmp in wq_tmp:
         #         # heapq.heappush(wq, tmp)
         #         wq.append(tmp)  # 불가능했던 것들 다시 wq에 추가
-        wq = wq_tmp
+        if len(wq_tmp) > 0:
+            wq = wq_tmp
 
 # 채점 종료
 def end_check(t, j_id):
