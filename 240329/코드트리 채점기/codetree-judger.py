@@ -47,7 +47,7 @@ def try_check(t):
                     # 부적절 채점 확인
                     s, e, id, j_id = flag_hist[-1]
                     if t >= s + 3 * (e-s):  # 채점 가능
-                        wq_d[tmp_u] = False  # 채점 큐 도메인 False 변환
+                        wq_d[tmp_u] = False  # 대기 큐 도메인 False 변환
                         work_d[domain] = True  # 채점 중 도메인 True 변경
                         # heapq.heapify(empty_j)  # 비어있는 채점기 중 가장 작은 번호 얻기
                         # num_j = empty_j[0]
@@ -62,6 +62,7 @@ def try_check(t):
                         heapq.heappush(wq_tmp, (tmp_p, tmp_t, tmp_u))
                         # wq_tmp.append((tmp_p, tmp_t, tmp_u))  # 불가능 리스트 추가
                 else:  # 한번도 채점 안된 도메인인 경우 - 채점 시작
+                    wq_d[tmp_u] = False  # 대기 큐 도메인 False 변환
                     work_d[domain] = True  # 채점 중 도메인 True 변경
                     # heapq.heapify(empty_j)  # 비어있는 채점기 중 가장 작은 번호 얻기
                     # num_j = empty_j[0]
