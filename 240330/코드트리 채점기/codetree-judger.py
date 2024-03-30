@@ -152,7 +152,8 @@ def end_check(t, j_id):
             hist_d[tmp_domain] = [(tmp_t, t, id, j_id)]  # 새로 추가
         else:
             hist_d[tmp_domain].append((tmp_t, t, id, j_id))  # 채점 끝난 기록 append
-        work_d[tmp_domain] = False  # 채점 중이 아님 표시
+        # work_d[tmp_domain] = False  # 채점 중이 아님 표시
+        work_d.pop(tmp_domain)  # 채점 중이 아님 표시
         heapq.heappush(empty_j, j_id)  # 남은 채점기에 추가
         # empty_j.append(j_id)  # 비어있는 채점기에 추가
 
