@@ -12,10 +12,11 @@ work_d = {}  # 채점 중인 도메인
 wq_d = {}  # 대기 큐 도메인 : 도메인별 heapq로 관리
 wq_u = {}  # 대기 큐 url
 hist_d = {}  # 채점 완료된 것 (도메인 : [])
+ans = 0
 
 # 채점 준비
 def init(cnt_j, u):
-    global empty_j, work_j, work_d, wq, wq_d, wq_u
+    global empty_j, work_j, work_d, wq, wq_d, wq_u, ans
     empty_j = [i for i in range(1, cnt_j + 1)]
     work_j = [[] for i in range(0, cnt_j + 1)]
     work_d = {}
@@ -24,10 +25,11 @@ def init(cnt_j, u):
     wq_d = {domain: [(1, 0, u)]}
     wq_u = {u: True}
     # wq.append((1, 0, u))
+    ans += 1
 
 # 채점 요청
 def ask_check(t, p, u):
-    global wq_u
+    global wq_u, ans
     # wq_d 일지 url 체크
     flag = wq_u.get(u, False)
     if not flag:
@@ -40,10 +42,11 @@ def ask_check(t, p, u):
             wq_d[domain] = [(p, t, u)]
         else:  # 해당 도메인이 들어온적 있는 경우
             heapq.heappush(wq_d[domain], (p, t, u))
+        ans += 1
 
 # 채점 시도
 def try_check(t):  # 300
-    global wq, work_d, wd_d
+    global wq, work_d, wd_d, ans
 
     if len(empty_j) > 0:
         # 현재 채점 불가능한 도메인 검색
@@ -75,6 +78,7 @@ def try_check(t):  # 300
 
             num_j = heapq.heappop(empty_j)  # 채점기 선정
             work_j[num_j] = (tmp_p, t, tmp_u)  # 채점 중인 채점기 항목 추가
+            ans -= 1
 
             for i in range(len(tmp)):  # 채점 가능한 요청 중 채점 못한 것 다시 돌려놓기
                 p, t, u = tmp[i]
@@ -155,11 +159,11 @@ def end_check(t, j_id):
 # 채점 대기 큐 조회
 def check_wq(t):
     # print(len(wq))
-    cnt = 0
-    for d, ds in wq_d.items():
-        cnt += len(ds)
+    # cnt = 0
+    # for d, ds in wq_d.items():
+    #     cnt += len(ds)
 
-    print(cnt)
+    print(ans)
 
 Q = int(input())
 for _ in range(Q):
