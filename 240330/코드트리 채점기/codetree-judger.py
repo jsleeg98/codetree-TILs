@@ -79,6 +79,8 @@ def try_check(t):  # 300
             num_j = heapq.heappop(empty_j)  # 채점기 선정
             work_j[num_j] = (tmp_p, t, tmp_u, tmp_domain, tmp_id)  # 채점 중인 채점기 항목 추가
             ans -= 1
+            if len(work_d[tmp_domain]) == 0:
+                del work_d[tmp_domain]
 
             for i in range(len(tmp)):  # 채점 가능한 요청 중 채점 못한 것 다시 돌려놓기
                 p, t, u, domain, id = tmp[i]
