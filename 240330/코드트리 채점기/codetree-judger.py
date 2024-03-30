@@ -53,8 +53,8 @@ def try_check(t):  # 300
         can_d = []
         cannot_d = []
         for d in hist_d.keys():  # 채점 끝난 도메인 조건
-            s, e, id, j_id = hist_d[d][-1]
-            if t < s + 3 * (e - s):
+            s, e, id, j_id, cri_t = hist_d[d][-1]
+            if t < cri_t:
                 cannot_d.append(d)
 
         for d in work_d.keys():  # 채점 중인 도메인 채점 불가
@@ -149,9 +149,9 @@ def end_check(t, j_id):
         domain, id = tmp_u.split('/')
         flag = hist_d.get(domain, False)  # 완료 도메인 존재 학인
         if not flag:  # 없으면
-            hist_d[domain] = [(tmp_t, t, id, j_id)]  # 새로 추가
+            hist_d[domain] = [(tmp_t, t, id, j_id, tmp_t + 3 * (t - tmp_t))]  # 새로 추가
         else:
-            hist_d[domain].append((tmp_t, t, id, j_id))  # 채점 끝난 기록 append
+            hist_d[domain].append((tmp_t, t, id, j_id, tmp_t + 3 * (t - tmp_t)))  # 채점 끝난 기록 append
         work_d[domain] = False  # 채점 중이 아님 표시
         heapq.heappush(empty_j, j_id)  # 남은 채점기에 추가
         # empty_j.append(j_id)  # 비어있는 채점기에 추가
