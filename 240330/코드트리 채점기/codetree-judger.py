@@ -22,7 +22,7 @@ def init(cnt_j, u):
     work_d = {}
     # wq = []
     domain, id = u.split('/')
-    wq_d = {domain: [(1, 0, u)]}
+    wq_d = {domain: [(1, 0, u, domain, id)]}
     wq_u = {u: True}
     # wq.append((1, 0, u))
     ans += 1
@@ -39,9 +39,9 @@ def ask_check(t, p, u):
         domain, id = u.split('/')
         flag_d = wq_d.get(domain, False)
         if not flag_d:  # wq_d에 해당 도메인이 처음 들어오는 경우
-            wq_d[domain] = [(p, t, u)]
+            wq_d[domain] = [(p, t, u, domain, id)]
         else:  # 해당 도메인이 들어온적 있는 경우
-            heapq.heappush(wq_d[domain], (p, t, u))
+            heapq.heappush(wq_d[domain], (p, t, u, domain, id))
         ans += 1
 
 # 채점 시도
@@ -53,8 +53,8 @@ def try_check(t):  # 300
         can_d = []
         cannot_d = []
         for d in hist_d.keys():  # 채점 끝난 도메인 조건
-            s, e, id, j_id, cri_t = hist_d[d][-1]
-            if t < cri_t:
+            s, e, id, j_id = hist_d[d][-1]
+            if t < s + 3 * (e - s):
                 cannot_d.append(d)
 
         for d in work_d.keys():  # 채점 중인 도메인 채점 불가
@@ -71,19 +71,19 @@ def try_check(t):  # 300
 
         if len(tmp) > 0:  # 채점 가능한 요청이 있는 경우
             heapq.heapify(tmp)
-            tmp_p, tmp_t, tmp_u = heapq.heappop(tmp)  # 최고 우선 순위 뽑기
-            domain, id = tmp_u.split('/')
-            work_d[domain] = True  # 채점 중인 도메인 처리
+            tmp_p, tmp_t, tmp_u, tmp_domain, tmp_id = heapq.heappop(tmp)  # 최고 우선 순위 뽑기
+            # domain, id = tmp_u.split('/')
+            work_d[tmp_domain] = True  # 채점 중인 도메인 처리
             wq_u[tmp_u] = False  # 채점 대기 큐의 url 제거 처리
 
             num_j = heapq.heappop(empty_j)  # 채점기 선정
-            work_j[num_j] = (tmp_p, t, tmp_u)  # 채점 중인 채점기 항목 추가
+            work_j[num_j] = (tmp_p, t, tmp_u, tmp_domain, tmp_id)  # 채점 중인 채점기 항목 추가
             ans -= 1
 
             for i in range(len(tmp)):  # 채점 가능한 요청 중 채점 못한 것 다시 돌려놓기
-                p, t, u = tmp[i]
-                domain, id = u.split('/')
-                heapq.heappush(wq_d[domain], (p, t, u))
+                p, t, u, domain, id = tmp[i]
+                # domain, id = u.split('/')
+                heapq.heappush(wq_d[domain], (p, t, u, domain, id))
 
 
 
@@ -144,15 +144,15 @@ def try_check(t):  # 300
 def end_check(t, j_id):
     global work_j, work_d, empty_j, hist_d
     if len(work_j[j_id]) > 0:
-        tmp_p, tmp_t, tmp_u = work_j[j_id]
+        tmp_p, tmp_t, tmp_u, tmp_domain, tmp_id = work_j[j_id]
         work_j[j_id] = []  # 채점기 종료
-        domain, id = tmp_u.split('/')
-        flag = hist_d.get(domain, False)  # 완료 도메인 존재 학인
+        # domain, id = tmp_u.split('/')
+        flag = hist_d.get(tmp_domain, False)  # 완료 도메인 존재 학인
         if not flag:  # 없으면
-            hist_d[domain] = [(tmp_t, t, id, j_id, tmp_t + 3 * (t - tmp_t))]  # 새로 추가
+            hist_d[tmp_domain] = [(tmp_t, t, id, j_id)]  # 새로 추가
         else:
-            hist_d[domain].append((tmp_t, t, id, j_id, tmp_t + 3 * (t - tmp_t)))  # 채점 끝난 기록 append
-        work_d[domain] = False  # 채점 중이 아님 표시
+            hist_d[tmp_domain].append((tmp_t, t, id, j_id))  # 채점 끝난 기록 append
+        work_d[tmp_domain] = False  # 채점 중이 아님 표시
         heapq.heappush(empty_j, j_id)  # 남은 채점기에 추가
         # empty_j.append(j_id)  # 비어있는 채점기에 추가
 
