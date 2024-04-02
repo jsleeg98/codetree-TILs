@@ -43,7 +43,8 @@ def check(query):
     chat = query[1]
     q = deque()
     for tmp_cc in C[chat]:
-        q.append((tmp_cc, 1))
+        if noti[tmp_cc] == 1:
+            q.append((tmp_cc, 1))
     cnt = 0
     while q:
         tmp_c, depth = q.popleft()
