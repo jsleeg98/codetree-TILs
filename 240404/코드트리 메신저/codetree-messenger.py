@@ -25,7 +25,8 @@ def init(query):
     for i in range(1, N + 1):
         chat = i
         cur = i
-        for cnt in range(auth[i]):
+        power_cnt = min(auth[i], 21)
+        for cnt in range(power_cnt):
             if alert[cur] == 0:
                 break
             cnt_chat[parents[cur]].add(chat)
@@ -42,15 +43,14 @@ def change_alert(query):
         # 부모 위로 원래 알림이 왔던 것들 다 지우기
         cur_cnt_chat = copy.deepcopy(cnt_chat[chat])
         cur_cnt_chat.add(chat)  # 현재 채팅방 추가
-        for c in cur_cnt_chat:
-            tmp_chat = c
-            tmp_cur = c
-            for cnt in range(auth[c]):
-                if alert[tmp_cur] == 0:
-                    break
-                if c in cnt_chat[parents[tmp_chat]]:
-                    cnt_chat[parents[tmp_chat]].remove(c)
-                    tmp_cur = parents[tmp_cur]
+        while True:  # 맨 위까지 탐색
+            for c in cur_cnt_chat:
+                if c in cnt_chat[parent]:
+                    cnt_chat[parent].remove(c)  # 해당 채팅방 삭제
+            parent = parents[parent]
+            if parent == 0:
+                break
+        alert[chat] = 0  # 알림 끄기
     else:  # 켜는 경우
         alert[chat] = 1  # 알림 켜기
         parent = parents[chat]  # 기준 부모
@@ -60,7 +60,8 @@ def change_alert(query):
         for c in cur_cnt_chat:  # 채팅방 별 다시 알림 처리
             tmp_chat = c
             cur = c
-            for cnt in range(auth[c]):
+            power_cnt = min(auth[c], 21)
+            for cnt in range(power_cnt):
                 if alert[cur] == 0:
                     break
                 cnt_chat[parents[cur]].add(tmp_chat)
@@ -71,10 +72,11 @@ def change_auth(query):
     # 현재 채팅방 알림 다 지우기
     tmp_chat = chat
     cur = chat
-    for cnt in range(auth[chat]):
+    power_cnt = min(auth[chat], 21)
+    for cnt in range(power_cnt):
         if alert[cur] == 0:
             break
-        if tmp_chat in cnt_chat[parents[cur]]:
+        if cur in cnt_chat[parents[cur]]:
             cnt_chat[parents[cur]].remove(tmp_chat)
         cur = parents[cur]
 
@@ -84,7 +86,8 @@ def change_auth(query):
     # 현재 채팅방 알림 다시 갱신
     tmp_chat = chat
     cur = chat
-    for cnt in range(auth[chat]):
+    power_cnt = min(auth[chat], 21)
+    for cnt in range(power_cnt):
         if alert[cur] == 0:
             break
         cnt_chat[parents[cur]].add(tmp_chat)
@@ -131,7 +134,8 @@ def change_parent(query):
     for c in cur_cnt_chat:  # 채팅방 별 다시 알림 처리
         tmp_chat = c
         cur = c
-        for cnt in range(auth[c]):
+        power_cnt = min(auth[c], 21)
+        for cnt in range(power_cnt):
             if alert[cur] == 0:
                 break
             cnt_chat[parents[cur]].add(tmp_chat)
@@ -142,7 +146,8 @@ def change_parent(query):
     for c in cur_cnt_chat:  # 채팅방 별 다시 알림 처리
         tmp_chat = c
         cur = c
-        for cnt in range(auth[c]):
+        power_cnt = min(auth[c], 21)
+        for cnt in range(power_cnt):
             if alert[cur] == 0:
                 break
             cnt_chat[parents[cur]].add(tmp_chat)
