@@ -70,7 +70,8 @@ def change_auth(query):
     for cnt in range(auth[chat]):
         if alert[cur] == 0:
             break
-        cnt_chat[parents[cur]].remove(tmp_chat)
+        if cur in cnt_chat[parents[cur]]:
+            cnt_chat[parents[cur]].remove(tmp_chat)
         cur = parents[cur]
 
     # 세기 갱신
@@ -89,20 +90,26 @@ def change_parent(query):
     c1, c2 = query[1], query[2]
     # 양쪽 위에 다 지우기
     # 현재 채팅방 알림 다 지우기
-    tmp_chat = c1
-    cur = c1
-    for cnt in range(auth[c1]):
-        if alert[cur] == 0:
-            break
-        cnt_chat[parents[cur]].remove(tmp_chat)
-        cur = parents[cur]
-    tmp_chat = c2
-    cur = c2
-    for cnt in range(auth[c2]):
-        if alert[cur] == 0:
-            break
-        cnt_chat[parents[cur]].remove(tmp_chat)
-        cur = parents[cur]
+    parent = parents[c1]  # 기준 부모
+    # 부모 위로 원래 알림이 왔던 것들 다 지우기
+    cur_cnt_chat = cnt_chat[c1]
+    cur_cnt_chat.add(c1)  # 현재 채팅방 추가
+    while parent != 0:  # 맨 위까지 탐색
+        for c in cur_cnt_chat:
+            if c in cnt_chat[parent]:
+                cnt_chat[parent].remove(c)  # 해당 채팅방 삭제
+        parent = parents[parent]
+
+    parent = parents[c2]  # 기준 부모
+    # 부모 위로 원래 알림이 왔던 것들 다 지우기
+    cur_cnt_chat = cnt_chat[c2]
+    cur_cnt_chat.add(c2)  # 현재 채팅방 추가
+    while parent != 0:  # 맨 위까지 탐색
+        for c in cur_cnt_chat:
+            if c in cnt_chat[parent]:
+                cnt_chat[parent].remove(c)  # 해당 채팅방 삭제
+        parent = parents[parent]
+
 
     # 부모 변경
     c1_parent = parents[c1]
@@ -111,20 +118,27 @@ def change_parent(query):
     parents[c2] = c1_parent
 
     # 양쪽 위에 알림 갱신
-    tmp_chat = c1
-    cur = c1
-    for cnt in range(auth[c1]):
-        if alert[cur] == 0:
-            break
-        cnt_chat[parents[cur]].add(tmp_chat)
-        cur = parents[cur]
-    tmp_chat = c2
-    cur = c2
-    for cnt in range(auth[c2]):
-        if alert[cur] == 0:
-            break
-        cnt_chat[parents[cur]].add(tmp_chat)
-        cur = parents[cur]
+    cur_cnt_chat = cnt_chat[c1]
+    cur_cnt_chat.add(c1)  # 기준 채팅방도 추가하기
+    for c in cur_cnt_chat:  # 채팅방 별 다시 알림 처리
+        tmp_chat = c
+        cur = c
+        for cnt in range(auth[c]):
+            if alert[cur] == 0:
+                break
+            cnt_chat[parents[cur]].add(tmp_chat)
+            cur = parents[cur]
+
+    cur_cnt_chat = cnt_chat[c2]
+    cur_cnt_chat.add(c2)  # 기준 채팅방도 추가하기
+    for c in cur_cnt_chat:  # 채팅방 별 다시 알림 처리
+        tmp_chat = c
+        cur = c
+        for cnt in range(auth[c]):
+            if alert[cur] == 0:
+                break
+            cnt_chat[parents[cur]].add(tmp_chat)
+            cur = parents[cur]
 
 def check(query):
     chat = query[1]
