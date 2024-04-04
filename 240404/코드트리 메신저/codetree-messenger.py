@@ -1,4 +1,5 @@
 import sys
+import copy
 
 # sys.stdin = open('input.txt', 'r')
 
@@ -39,19 +40,21 @@ def change_alert(query):
     if alert[chat] == 1:  # 끄는 경우
         parent = parents[chat]  # 기준 부모
         # 부모 위로 원래 알림이 왔던 것들 다 지우기
-        cur_cnt_chat = cnt_chat[chat]
+        cur_cnt_chat = copy.deepcopy(cnt_chat[chat])
         cur_cnt_chat.add(chat)  # 현재 채팅방 추가
-        while parent != 0:  # 맨 위까지 탐색
+        while True:  # 맨 위까지 탐색
             for c in cur_cnt_chat:
                 if c in cnt_chat[parent]:
                     cnt_chat[parent].remove(c)  # 해당 채팅방 삭제
             parent = parents[parent]
+            if parent == 0:
+                break
         alert[chat] = 0  # 알림 끄기
     else:  # 켜는 경우
         alert[chat] = 1  # 알림 켜기
         parent = parents[chat]  # 기준 부모
         # 부모 위로 알림 가능한 경우 추가하기
-        cur_cnt_chat = cnt_chat[chat]
+        cur_cnt_chat = copy.deepcopy(cnt_chat[chat])
         cur_cnt_chat.add(chat)  # 기준 채팅방도 추가하기
         for c in cur_cnt_chat:  # 채팅방 별 다시 알림 처리
             tmp_chat = c
@@ -92,17 +95,19 @@ def change_parent(query):
     # 현재 채팅방 알림 다 지우기
     parent = parents[c1]  # 기준 부모
     # 부모 위로 원래 알림이 왔던 것들 다 지우기
-    cur_cnt_chat = cnt_chat[c1]
+    cur_cnt_chat = copy.deepcopy(cnt_chat[c1])
     cur_cnt_chat.add(c1)  # 현재 채팅방 추가
-    while parent != 0:  # 맨 위까지 탐색
+    while True:  # 맨 위까지 탐색
         for c in cur_cnt_chat:
             if c in cnt_chat[parent]:
                 cnt_chat[parent].remove(c)  # 해당 채팅방 삭제
         parent = parents[parent]
+        if parent == 0:
+            break
 
     parent = parents[c2]  # 기준 부모
     # 부모 위로 원래 알림이 왔던 것들 다 지우기
-    cur_cnt_chat = cnt_chat[c2]
+    cur_cnt_chat = copy.deepcopy(cnt_chat[c2])
     cur_cnt_chat.add(c2)  # 현재 채팅방 추가
     while parent != 0:  # 맨 위까지 탐색
         for c in cur_cnt_chat:
@@ -118,7 +123,7 @@ def change_parent(query):
     parents[c2] = c1_parent
 
     # 양쪽 위에 알림 갱신
-    cur_cnt_chat = cnt_chat[c1]
+    cur_cnt_chat = copy.deepcopy(cnt_chat[c1])
     cur_cnt_chat.add(c1)  # 기준 채팅방도 추가하기
     for c in cur_cnt_chat:  # 채팅방 별 다시 알림 처리
         tmp_chat = c
@@ -129,7 +134,7 @@ def change_parent(query):
             cnt_chat[parents[cur]].add(tmp_chat)
             cur = parents[cur]
 
-    cur_cnt_chat = cnt_chat[c2]
+    cur_cnt_chat = copy.deepcopy(cnt_chat[c2])
     cur_cnt_chat.add(c2)  # 기준 채팅방도 추가하기
     for c in cur_cnt_chat:  # 채팅방 별 다시 알림 처리
         tmp_chat = c
@@ -149,6 +154,7 @@ N, Q = map(int, input().split())
 
 for _ in range(Q):
     query = list(map(int, input().split()))
+    # print(query)
     if query[0] == 100:
         init(query)
         # print_cnt_chat(cnt_chat)
