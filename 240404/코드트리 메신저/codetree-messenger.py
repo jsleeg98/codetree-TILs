@@ -42,14 +42,15 @@ def change_alert(query):
         # 부모 위로 원래 알림이 왔던 것들 다 지우기
         cur_cnt_chat = copy.deepcopy(cnt_chat[chat])
         cur_cnt_chat.add(chat)  # 현재 채팅방 추가
-        while True:  # 맨 위까지 탐색
-            for c in cur_cnt_chat:
-                if c in cnt_chat[parent]:
-                    cnt_chat[parent].remove(c)  # 해당 채팅방 삭제
-            parent = parents[parent]
-            if parent == 0:
-                break
-        alert[chat] = 0  # 알림 끄기
+        for c in cur_cnt_chat:
+            tmp_chat = c
+            tmp_cur = c
+            for cnt in range(auth[c]):
+                if alert[tmp_cur] == 0:
+                    break
+                if c in cnt_chat[parents[tmp_chat]]:
+                    cnt_chat[parents[tmp_chat]].remove(c)
+                    tmp_cur = parents[tmp_cur]
     else:  # 켜는 경우
         alert[chat] = 1  # 알림 켜기
         parent = parents[chat]  # 기준 부모
@@ -73,7 +74,7 @@ def change_auth(query):
     for cnt in range(auth[chat]):
         if alert[cur] == 0:
             break
-        if cur in cnt_chat[parents[cur]]:
+        if tmp_chat in cnt_chat[parents[cur]]:
             cnt_chat[parents[cur]].remove(tmp_chat)
         cur = parents[cur]
 
