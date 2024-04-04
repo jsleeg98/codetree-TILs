@@ -109,11 +109,13 @@ def change_parent(query):
     # 부모 위로 원래 알림이 왔던 것들 다 지우기
     cur_cnt_chat = copy.deepcopy(cnt_chat[c2])
     cur_cnt_chat.add(c2)  # 현재 채팅방 추가
-    while parent != 0:  # 맨 위까지 탐색
+    while True:  # 맨 위까지 탐색
         for c in cur_cnt_chat:
             if c in cnt_chat[parent]:
                 cnt_chat[parent].remove(c)  # 해당 채팅방 삭제
         parent = parents[parent]
+        if parent == 0:
+            break
 
 
     # 부모 변경
