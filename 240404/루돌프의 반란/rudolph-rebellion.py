@@ -146,6 +146,8 @@ def move_s(T):
                         dir = d
                 if Fr == 0 and Fc == 0:  # 가까워지지 않는 경우 패스
                     continue
+                # 움직이는 경우 현재 위치에서 삭제
+                board[santas[i].r][santas[i].c] = 0
                 santas[i].r = Fr
                 santas[i].c = Fc
                 # 루돌프가 있는 경우
@@ -170,8 +172,6 @@ def move_s(T):
                         board[SNr][SNc] = i
                 else:  # 비어있는 경우
                     board[Fr][Fc] = i
-            else:
-                santas[i].t -= 0
 
 def add_score():
     global santas
@@ -214,12 +214,14 @@ for _ in range(P):
 
 cnt_survive = P
 
+print_santa_ro(santas)
 for T in range(1, M + 1):
     # print(T)
     move_r(T)
-    # print_santa_ro(santas)
+    print_santa_ro(santas)
     move_s(T)
-    # print_santa_ro(santas)
+    print_santa_ro(santas)
+    print('=' * 20)
     add_score()
     if cnt_survive == 0:
         break
