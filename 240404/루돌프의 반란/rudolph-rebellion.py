@@ -214,14 +214,14 @@ for _ in range(P):
 
 cnt_survive = P
 
-print_santa_ro(santas)
+# print_santa_ro(santas)
 for T in range(1, M + 1):
     # print(T)
     move_r(T)
-    print_santa_ro(santas)
+    # print_santa_ro(santas)
     move_s(T)
-    print_santa_ro(santas)
-    print('=' * 20)
+    # print_santa_ro(santas)
+    # print('=' * 20)
     add_score()
     if cnt_survive == 0:
         break
