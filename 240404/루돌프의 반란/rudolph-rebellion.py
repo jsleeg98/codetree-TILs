@@ -19,15 +19,15 @@ dir_r = [(-1, -1), (-1, 0), (-1, 1),
          (1, -1), (1, 0), (1, 1)]
 
 def move_r(T):
-    global Rr, Rc, tmp_board, cnt_survive
+    global Rr, Rc, board, cnt_survive
     min_dist = INF
     li_can = []
     # 탈락하지 않은 산타 리스트에 추가
     for i in range(1, P + 1):
-        if santas[i].s:
+        if santas[i].s:  # 탈락하지 않은 경우
             # 루돌프와 거리 측정
             dist = (santas[i].r - Rr) * (santas[i].r - Rr) + (santas[i].c - Rc) * (santas[i].c - Rc)
-            if dist < min_dist:
+            if dist < min_dist:  # 거리가 작은 것만 li_can에 저장
                 min_dist = dist
                 li_can = [(dist, -santas[i].r, -santas[i].c, i)]
             elif dist == min_dist:
@@ -35,7 +35,7 @@ def move_r(T):
 
     # 산타 선정
     heapq.heapify(li_can)
-    tmp_santa = li_can[0]
+    tmp_santa = li_can[0]  # 최우선 산타 추출
 
     min_dist = INF
     Nr, Nc = 0, 0
@@ -44,7 +44,7 @@ def move_r(T):
     for i in range(8):
         nr = Rr + dir_r[i][0]
         nc = Rc + dir_r[i][1]
-        if nr < 1 or N < nr or nc < 1 or N < nc:
+        if nr < 1 or N < nr or nc < 1 or N < nc:  # 맵에서 나간 경우
             continue
         dist = (nr - (tmp_santa[1] * -1)) * (nr - (tmp_santa[1] * -1)) + (nc - (tmp_santa[2] * -1)) * (nc - (tmp_santa[2] * -1))
         if dist < min_dist:
@@ -62,7 +62,6 @@ def move_r(T):
         if santas[i].s:
             board[santas[i].r][santas[i].c] = i
 
-    tmp_board = [[0 for _ in range(N + 1)] for _ in range(N + 1)]  # 임시 보드 초기화
     if board[Rr][Rc] != 0:  # 산타와 충돌한 경우
         id = board[Rr][Rc]  # 산타 번호
         santas[id].score += C  # 산타 점수 추가
@@ -75,13 +74,15 @@ def move_r(T):
             santas[id].s = False  # 탈락 처리
             cnt_survive -= 1
         elif board[SNr][SNc] != 0:  # 다른 산타와 충돌한 경우
-            interaction_santa_ro(board[SNr][SNc], dir)
+            before_num = board[SNr][SNc]
+            board[SNr][SNc] = id
+            interaction_santa_ro(before_num, dir)
         else:  # 비어 있는 경우
             pass
 
 
 def interaction_santa_ro(santa_num, dir):
-    global tmp_board, cnt_survive
+    global board, cnt_survive
     SNr = santas[santa_num].r + dir_r[dir][0]
     SNc = santas[santa_num].c + dir_r[dir][1]
     santas[santa_num].r = SNr
@@ -90,16 +91,17 @@ def interaction_santa_ro(santa_num, dir):
         santas[santa_num].s = False  # 탈락 처리
         cnt_survive -= 1
     elif board[SNr][SNc] != 0:  # 다른 산타와 충돌한 경우
-        tmp_board[SNr][SNc] = santa_num
-        interaction_santa_ro(board[SNr][SNc], dir)
+        before_num = board[SNr][SNc]
+        board[SNr][SNc] = santa_num
+        interaction_santa_ro(before_num, dir)
     else:  # 산타가 없는 경우
-        tmp_board[SNr][SNc] = santa_num
+        board[SNr][SNc] = santa_num
 
 
 dir_s = [(-1, 0), (0, 1), (1, 0), (0, -1)]
 
 def interaction_santa(santa_num, dir):
-    global tmp_board, cnt_survive
+    global board, cnt_survive
     SNr = santas[santa_num].r + dir_s[dir][0]
     SNc = santas[santa_num].c + dir_s[dir][1]
     santas[santa_num].r = SNr
@@ -112,11 +114,11 @@ def interaction_santa(santa_num, dir):
         board[SNr][SNc] = santa_num
         interaction_santa(before_num, dir)
     else:  # 산타가 없는 경우
-        tmp_board[SNr][SNc] = santa_num
+        board[SNr][SNc] = santa_num
 
 
 def move_s(T):
-    global tmp_board, cnt_survive
+    global board, cnt_survive
 
     board = [[0 for _ in range(MAX_N + 1)] for _ in range(MAX_N + 1)]  # 보드
     # 보드에 산타 위치 표시
@@ -124,7 +126,6 @@ def move_s(T):
         if santas[i].s:
             board[santas[i].r][santas[i].c] = i
 
-    tmp_board = [[0 for _ in range(MAX_N + 1)] for _ in range(MAX_N + 1)]  # 보드
     for i in range(1, P + 1):
         if santas[i].s:
             if santas[i].t <= T:
