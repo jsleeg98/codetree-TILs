@@ -131,12 +131,13 @@ for _ in range(m):
     r, c, d, s = map(int, input().split())
     players.append(Player(r, c, d, s))
 
+# 플레이어가 있는 위치 표시
+player_board = [[-1 for _ in range(n + 1)] for _ in range(n + 1)]
+for i in range(1, m + 1):
+    r, c = players[i].r, players[i].c
+    player_board[r][c] = i
+
 for _ in range(k):
-    # 플레이어가 있는 위치 표시
-    player_board = [[-1 for _ in range(n + 1)] for _ in range(n + 1)]
-    for i in range(1, m + 1):
-        r, c = players[i].r, players[i].c
-        player_board[r][c] = i
     # print_player_board()
     for i in range(1, m + 1):
         # 플레이어 이동
