@@ -132,26 +132,23 @@ def check_box(query):
         # print(belt_front_back)
         # 해당 벨트에서 맨 앞으로 가져오기
         if belt_front_back[belt_idx][0] != f_id:  # 원래 맨 앞이 아니었던 경우
-            if box_list[f_id].back < 0:  # 맨 뒤였던 경우
-                front_id = box_list[f_id].front
-                box_list[front_id].back = -belt_idx
-                belt_front_back[belt_idx][1] = front_id  # 벨트 맨 뒤 정보 갱신
-            else:  # 중간이었던 경우
-                # 기존 위치 앞뒤 붙이기
-                # print(f_id)
-                # if f_id == 937032277:
-                #     print()
-                front_box_id = box_list[f_id].front
-                back_box_id = box_list[f_id].back
-                # print(front_box_id)
-                box_list[front_box_id].back = back_box_id
-                box_list[back_box_id].front = front_box_id
-            # 맨 앞 바꾸기
-            before_front_id = belt_front_back[belt_idx][0]  # 기존의 맨앞 상자 id
-            box_list[before_front_id].front = f_id  # 기존 맨 앞 상자 front에 f_id 갱신
-            box_list[f_id].front = -belt_idx  # f_id에 벨트 정보 갱신
-            box_list[f_id].back = before_front_id  # f_id back에 기존 맨 앞 상자 id 갱신
-            belt_front_back[belt_idx][0] = f_id  # 벨트 맨 앞 정보 갱신
+            ori_head = belt_front_back[belt_idx][0]
+            ori_tail = belt_front_back[belt_idx][1]
+
+            # 원래의 tail에 원래의 head 넣기
+            # belt_front_back 갱신
+            belt_front_back[belt_idx][0] = f_id
+            belt_front_back[belt_idx][1] = box_list[f_id].front
+            # front back 갱신
+            # last_box = box_list[ori_tail]
+            box_list[ori_tail].back = ori_head
+            box_list[ori_head].front = f_id
+
+            box_list[box_list[f_id].front].back = -belt_idx
+            box_list[f_id].front = -belt_idx
+
+
+
 
 def break_belt(query):
     global belt_front_back, belt_status, box_list
