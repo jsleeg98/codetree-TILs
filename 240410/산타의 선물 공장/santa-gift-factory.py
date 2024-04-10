@@ -158,7 +158,7 @@ def break_belt(query):
     else:  # 부서지지 않은 경우
         print(b_num)
         # 다음 벨트 찾기
-        nxt_b_num = ((b_num) % num_belt) + 1
+        nxt_b_num = (((b_num % num_belt) + 1) % num_belt) + 1
         while True:
             if belt_status[nxt_b_num] == 1:
                 break
