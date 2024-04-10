@@ -53,15 +53,18 @@ def unload_box(query):
         if belt_status[i] == 0:  # 해당 벨트 망가진 경우 패스
             continue
         front_id = belt_front_back[i][0]
-        if front_id == 937032277:
-            print()
         if front_id < 0:  # 벨트가 비어있는 경우
             continue
         # 상자 내리기
         if box_list[front_id].weight <= w_max:
-            belt_front_back[i][0] = box_list[front_id].back  # 해당 벨트 맨 앞 상자 id 변경
-            box_status[front_id] = 0  # 박스 상태 끄기
-            total_weight += box_list[front_id].weight
+            # 벨트위에 상자가 하나인 경우
+            if belt_front_back[i][0] == belt_front_back[i][1]:
+                pass
+            # 벨트위에 상자가 2개 이상인 경우
+            else:
+                belt_front_back[i][0] = box_list[front_id].back  # 해당 벨트 맨 앞 상자 id 변경
+                box_status[front_id] = 0  # 박스 상태 끄기
+                total_weight += box_list[front_id].weight
         # 맨 뒤로 보내기
         else:
             belt_front_back[i][0] = box_list[front_id].back  # 해당 벨트 맨 앞 상자 id 변경
@@ -82,19 +85,31 @@ def remove_box(query):
     else:
         print(r_id)
         box_status[r_id] = 0  # 박스 상태 끄기
-        if box_list[r_id].front < 0:  # 맨 앞 상자인 경우
-            belt_idx = -box_list[r_id].front
-            belt_front_back[belt_idx][0] = box_list[r_id].back
-            box_list[box_list[r_id].back].front = -belt_idx
-        elif box_list[r_id].back < 0:  # 맨 뒤 상자인 경우
-            belt_idx = -box_list[r_id].back
-            belt_front_back[belt_idx][1] = box_list[r_id].front
-            box_list[box_list[r_id].front].back = -belt_idx
-        else:  # 중간 상자였던 경우
-            front_box_id = box_list[r_id].front
-            back_box_id = box_list[r_id].back
-            box_list[front_box_id].back = back_box_id
-            box_list[back_box_id].front = front_box_id
+
+        # 해당 벨트 찾기
+        cur_id = r_id
+        # 현재 상자가 있는 벨트 찾기
+        while cur_id > 0:
+            cur_id = box_list[cur_id].front
+        # 벨트에 물건이 하나인 경우
+        if belt_front_back[-cur_id][0] == belt_front_back[-cur_id][1]:
+            belt_front_back[-cur_id][0] = cur_id
+            belt_front_back[-cur_id][1] = cur_id
+        # 벨트에 물건이 2개 이상인 경우
+        else:
+            if box_list[r_id].front < 0:  # 맨 앞 상자인 경우
+                belt_idx = -box_list[r_id].front
+                belt_front_back[belt_idx][0] = box_list[r_id].back
+                box_list[box_list[r_id].back].front = -belt_idx
+            elif box_list[r_id].back < 0:  # 맨 뒤 상자인 경우
+                belt_idx = -box_list[r_id].back
+                belt_front_back[belt_idx][1] = box_list[r_id].front
+                box_list[box_list[r_id].front].back = -belt_idx
+            else:  # 중간 상자였던 경우
+                front_box_id = box_list[r_id].front
+                back_box_id = box_list[r_id].back
+                box_list[front_box_id].back = back_box_id
+                box_list[back_box_id].front = front_box_id
 
 def check_box(query):
     global belt_front_back, box_list, box_status
@@ -150,7 +165,7 @@ def break_belt(query):
 
         if belt_front_back[b_num][0] > 0:  # 고장난 벨트에 물건이 있는 경우
             # 고장난 벨트 맨 앞을 새로운 벨트 맨뒤로 붙이기
-            if belt_front_back[b_num][0] > 0:  # 옮길 벨트에 물건이 있는 경우
+            if belt_front_back[nxt_b_num][0] > 0:  # 옮길 벨트에 물건이 있는 경우
                 broken_front_id = belt_front_back[b_num][0]  # 고장난 벨트의 맨 앞 id
                 broken_back_id = belt_front_back[b_num][1]  # 고장난 벨트의 맨 뒤 id
                 new_back_id = belt_front_back[nxt_b_num][1]  # 새로운 벨트의 맨 뒤 id
