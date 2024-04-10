@@ -8,6 +8,7 @@ class Box:
         self.front = -1
         self.back = -1
         self.weight = 0
+        self.belt = 0
 
 def make_factory(query):
     global belt_front_back, box_status, belt_status, num_belt, num_box
@@ -35,11 +36,13 @@ def make_factory(query):
             box_list[tmp_id[i][k]].front = front
             box_list[tmp_id[i][k]].back = tmp_id[i][k + 1]
             box_list[tmp_id[i][k]].weight = tmp_w[i][k]
+            box_list[tmp_id[i][k]].belt = i
             front = tmp_id[i][k]
         box_list[tmp_id[i][-1]] = Box()
         box_list[tmp_id[i][-1]].front = front
         box_list[tmp_id[i][-1]].back = -i
         box_list[tmp_id[i][-1]].weight = tmp_w[i][-1]
+        box_list[tmp_id[i][-1]].belt = i
         belt_front_back.append([tmp_id[i][0], tmp_id[i][-1]])
 
     # print(belt_front_back)
@@ -89,12 +92,13 @@ def remove_box(query):
         # 해당 벨트 찾기
         cur_id = r_id
         # 현재 상자가 있는 벨트 찾기
-        while cur_id > 0:
-            cur_id = box_list[cur_id].front
+        # while cur_id > 0:
+        #     cur_id = box_list[cur_id].front
+        belt_idx = box_list[r_id].belt
         # 벨트에 물건이 하나인 경우
-        if belt_front_back[-cur_id][0] == belt_front_back[-cur_id][1]:
-            belt_front_back[-cur_id][0] = cur_id
-            belt_front_back[-cur_id][1] = cur_id
+        if belt_front_back[belt_idx][0] == belt_front_back[belt_idx][1]:
+            belt_front_back[belt_idx][0] = -belt_idx
+            belt_front_back[belt_idx][1] = -belt_idx
         # 벨트에 물건이 2개 이상인 경우
         else:
             if box_list[r_id].front < 0:  # 맨 앞 상자인 경우
@@ -117,11 +121,11 @@ def check_box(query):
     if box_status[f_id] == 0:
         print(-1)
     else:
-        cur_id = f_id
+        # cur_id = f_id
         # 현재 상자가 있는 벨트 찾기
-        while cur_id > 0:
-            cur_id = box_list[cur_id].front
-        belt_idx = -cur_id
+        # while cur_id > 0:
+        #     cur_id = box_list[cur_id].front
+        belt_idx = box_list[f_id].belt
         print(belt_idx)
         # print(belt_front_back)
         # 해당 벨트에서 맨 앞으로 가져오기
@@ -178,6 +182,11 @@ def break_belt(query):
                 broken_back_id = belt_front_back[b_num][1]  # 고장난 벨트의 맨 뒤 id
                 belt_front_back[nxt_b_num][0] = broken_front_id
                 belt_front_back[nxt_b_num][1] = broken_back_id
+            broken_front_id = belt_front_back[b_num][0]
+            cur_id = broken_front_id
+            while cur_id > 0:
+                box_list[cur_id].belt = nxt_b_num
+                cur_id = box_list[cur_id].back
 
 
 
