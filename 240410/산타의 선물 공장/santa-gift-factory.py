@@ -162,7 +162,7 @@ def break_belt(query):
         while True:
             if belt_status[nxt_b_num] == 1:
                 break
-            nxt_b_num = ((nxt_b_num + 1) % num_belt) + 1
+            nxt_b_num = (nxt_b_num % num_belt) + 1
 
         belt_status[b_num] = 0  # 현재 벨트 고장 상태 변환
 
