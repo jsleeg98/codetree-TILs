@@ -1,6 +1,8 @@
 import sys
 from collections import defaultdict
 
+# sys.stdin = open('input.txt', 'r')
+
 class Box:
     def __init__(self):
         self.front = -1
@@ -105,7 +107,7 @@ def check_box(query):
         while cur_id > 0:
             cur_id = box_list[cur_id].front
         belt_idx = -cur_id
-        # print(belt_idx)
+        print(belt_idx)
         # print(belt_front_back)
         # 해당 벨트에서 맨 앞으로 가져오기
         if belt_front_back[belt_idx][0] != f_id:  # 원래 맨 앞이 아니었던 경우
@@ -115,7 +117,7 @@ def check_box(query):
                 belt_front_back[belt_idx][1] = front_id  # 벨트 맨 뒤 정보 갱신
             else:  # 중간이었던 경우
                 # 기존 위치 앞뒤 붙이기
-                print(f_id)
+                # print(f_id)
                 # if f_id == 937032277:
                 #     print()
                 front_box_id = box_list[f_id].front
