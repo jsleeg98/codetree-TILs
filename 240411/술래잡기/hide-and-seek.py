@@ -21,7 +21,7 @@ def inRange(r, c):
     if 1 <= r <= n and 1 <= c <= n:
         return True
     else:
-        return True
+        return False
 
 def move_runner():
     global runner_r, runner_c, runner_d
@@ -43,13 +43,20 @@ def move_runner():
                 # 새로운 위치 수정
                 nr = cr + dir[runner_d[i]][0]
                 nc = cc + dir[runner_d[i]][1]
-            # 술래가 있는 곳인 경우
-            if nr == mom_r and nc == mom_c:
-                continue
-            # 도망자 이동
-            runner_r[i] = nr
-            runner_c[i] = nc
-
+                # 돌았는 데 술래가 있는 곳인 경우
+                if nr == mom_r and nc == mom_c:
+                    continue
+                else:  # 돌았는데 술래가 없는 곳인 경우
+                    # 도망자 이동
+                    runner_r[i] = nr
+                    runner_c[i] = nc
+            else:  # 격자 내부 인경우
+                if nr == mom_r and nc == mom_c:  # 술래가 있는 경우
+                    continue
+                else:  # 술래가 없는 곳인 경우
+                    # 도망자 이동
+                    runner_r[i] = nr
+                    runner_c[i] = nc
 def move_mom():
     global rotate_dir, limit_i, mom_cnt, mom_d, mom_r, mom_c
 
@@ -97,11 +104,16 @@ def catch(k):
     for i in range(0, 3):
         nr = cur_r + dir[mom_d][0] * i
         nc = cur_c + dir[mom_d][1] * i
-        if not inRange(nr, nc):
+        if not inRange(nr, nc):  # 격자 밖 종료
             break
-        if tree_board[nr][nc] == 1:
+        if tree_board[nr][nc] == 1:  # 나무 위치 잡을 수 없음
             continue
         li_catch.append((nr, nc))
+
+    # for r in range(1, n + 1):
+    #     for c in range(1, n + 1):
+    #         print(runner_board[r][c], end=' ')
+    #     print()
 
     # 볼 수 있는 칸 중 도둑이 있는 지 확인
     for pos in li_catch:
@@ -109,7 +121,7 @@ def catch(k):
             score += len(runner_board[pos[0]][pos[1]]) * k
             for runner in runner_board[pos[0]][pos[1]]:
                 runner_state[runner] = 0  # 잡힘 표시
-
+    # print(mom_r, mom_c, mom_d)
 
 n, m, h, K = map(int, input().split())
 for i in range(1, m + 1):
