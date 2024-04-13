@@ -1,3 +1,6 @@
+# import sys
+# sys.stdin = open('input.txt', 'r')
+
 from collections import deque
 import queue
 
@@ -13,11 +16,11 @@ train_board = []
 sr = 0
 sc = 0
 total_score = 0
-
+is_left = []
 
 n, m, k = map(int, input().split())
 
-
+is_left = [True for _ in range(n)]
 
 for i in range(n):
     board.append(list(map(int, input().split())))
@@ -78,6 +81,7 @@ def update_line():
         sr = sr + nxt[nxt_idx][0]
         sc = sc + nxt[nxt_idx][1]
 
+# 기차 정보 획득
 train_idx = 0
 for r in range(n):
     for c in range(n):
@@ -90,20 +94,26 @@ for r in range(n):
 for _ in range(k):
     # 기차 전진
     for i in range(m):
-        tmp = trains[i].pop()
-        trains[i].appendleft(tmp)
+        if is_left[i]:
+            tmp = trains[i].pop()
+            trains[i].appendleft(tmp)
+        # else:
+
 
     # 보드에 기차 번호 표시
     train_board = [[-1 for _ in range(n)] for _ in range(n)]
     for i in range(m):
         for l in range(train_length[i]):
+            # print(trains[i][l], end=' ')
             r, c = trains[i][l]
             train_board[r][c] = i
-
+    # print()
     # for r in range(n):
     #     for c in range(n):
     #         print(f'{train_board[r][c]:<3}', end=' ')
     #     print()
+    # print('-' * 20)
+    # print(trains)
 
     # 공 던지기
     attacked_train = {}
@@ -112,22 +122,18 @@ for _ in range(k):
         nr = sr + dir[nxt_idx][0] * i
         nc = sc + dir[nxt_idx][1] * i
         # print(f'({nr}, {nc})', end=' ')
-        if train_board[nr][nc] != -1:
-            if not train_board[nr][nc] in attacked_train.keys():
-                attacked_train[train_board[nr][nc]] = (nr, nc)
-
-
+        if train_board[nr][nc] != -1:  # 기차가 있는 위치인 경우
+            if not train_board[nr][nc] in attacked_train.keys():  # 처음 만난 겨우
+                attacked_train[train_board[nr][nc]] = (nr, nc)  # 기차 번호 : 위치
+    # print(attacked_train)
 
     # 점수 처리
     for key, value in attacked_train.items():
         # 기차 위치 찾기
-        cnt = 1
         for i in range(len(trains[key])):
             if trains[key][i] == value:
+                total_score += (i + 1) ** 2
                 break
-            else:
-                cnt += 1
-        total_score += cnt ** 2
 
     # 맞은 팀 방향 바꾸기
     for key in attacked_train.keys():
