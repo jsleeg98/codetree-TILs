@@ -31,9 +31,12 @@ def inRange(r, c):
     else:
         return False
 
-def dfs(train_idx, cr, cc, length, rail):
+def dfs(train_idx, cr, cc, length):
     global visit
     trains[train_idx].append((cr, cc))
+    can_component = 5
+    can_r = 0
+    can_c = 0
     for i in range(4):
         nr = cr + dir[i][0]
         nc = cc + dir[i][1]
@@ -42,16 +45,26 @@ def dfs(train_idx, cr, cc, length, rail):
         if visit[nr][nc] == 1:
             continue
         if board[nr][nc] == 2:
-            visit[nr][nc] = 1
-            dfs(train_idx, nr, nc, length + 1, False)
+            length += 1
+            if can_component > 2:
+                can_component = 2
+                can_r = nr
+                can_c = nc
         elif board[nr][nc] == 3:
-            visit[nr][nc] = 1
-            dfs(train_idx, nr, nc, length + 1, True)
-            train_length.append(length + 1)
-        if rail:
-            if board[nr][nc] == 4:
-                visit[nr][nc] = 1
-                dfs(train_idx, nr, nc, length, True)
+            if can_component > 3:
+                can_component = 3
+                can_r = nr
+                can_c = nc
+        elif board[nr][nc] == 4:
+            if can_component > 4:
+                can_component = 4
+                can_r = nr
+                can_c = nc
+    if can_component != 5:
+        visit[can_r][can_c] = 1
+        dfs(train_idx, can_r, can_c, length)
+    else:
+        train_length.append(length + 1)
 
 def update_line():
     global tmp_cnt, nxt_idx, sr, sc
@@ -71,7 +84,7 @@ for r in range(n):
         if board[r][c] == 1:
             visit = [[0 for _ in range(n)] for _ in range(n)]
             visit[r][c] = 1
-            dfs(train_idx, r, c, 1, False)
+            dfs(train_idx, r, c, 1)
             train_idx += 1
 
 for _ in range(k):
@@ -86,10 +99,10 @@ for _ in range(k):
         for l in range(train_length[i]):
             r, c = trains[i][l]
             train_board[r][c] = i
-    
+
     # for r in range(n):
     #     for c in range(n):
-    #         print(train_board[r][c], end=' ')
+    #         print(f'{train_board[r][c]:<3}', end=' ')
     #     print()
 
     # 공 던지기
@@ -98,10 +111,10 @@ for _ in range(k):
     for i in range(n):
         nr = sr + dir[nxt_idx][0] * i
         nc = sc + dir[nxt_idx][1] * i
+        # print(f'({nr}, {nc})', end=' ')
         if train_board[nr][nc] != -1:
             if not train_board[nr][nc] in attacked_train.keys():
                 attacked_train[train_board[nr][nc]] = (nr, nc)
-
 
 
 
