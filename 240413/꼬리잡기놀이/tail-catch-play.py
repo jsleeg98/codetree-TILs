@@ -125,6 +125,7 @@ for _ in range(k):
         if train_board[nr][nc] != -1:  # 기차가 있는 위치인 경우
             if not train_board[nr][nc] in attacked_train.keys():  # 처음 만난 겨우
                 attacked_train[train_board[nr][nc]] = (nr, nc)  # 기차 번호 : 위치
+                break
     # print(attacked_train)
 
     # 점수 처리
@@ -133,10 +134,13 @@ for _ in range(k):
         for i in range(len(trains[key])):
             if trains[key][i] == value:
                 total_score += (i + 1) ** 2
+                # print(_, (i + 1) ** 2)
                 break
 
     # 맞은 팀 방향 바꾸기
     for key in attacked_train.keys():
+        # if key == 2:
+            # print(key)
         for i in range(train_length[key]):
             tmp = trains[key].popleft()
             trains[key].append(tmp)
